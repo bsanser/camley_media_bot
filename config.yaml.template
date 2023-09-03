@@ -1,0 +1,7 @@
+sonarr:
+  apikey: ''
+telegram:
+  token: ''
+  password: maybe not used
+radarr:
+  apikey: ''

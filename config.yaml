@@ -1,0 +1,7 @@
+sonarr:
+  apikey: '181c2d48e0b246ea98afff64cc050e9e'
+telegram:
+  token: '6193380962:AAFJb3hJkk5cD5fmJ8LIA9Xq1L9oIDtBgJY'
+  password: test
+radarr:
+  apikey: '14a0c5d81c824c02b97f1c1433422570'
