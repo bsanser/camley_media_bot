@@ -9,6 +9,8 @@ Telegram bot to download media
 - [ ] Notify on successful download
 - [ ] Create more results functionality
 - [ ] Have only one search function that works for both shows and movies
+- [ ] When somebody new is added to the group, the bot should send a message with the instructions (i.e. no need to type /start or /help)
+
 
 
 

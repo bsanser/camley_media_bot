@@ -4,6 +4,7 @@ import json
 import requests
 import yaml
 import os
+import logging
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(ROOT_DIR, "config.yaml")
@@ -15,18 +16,34 @@ class SonarrRetriever(media.MediaRetriever):
     def searchForMedia(self, search_term: str):
         results = {}
         query_parameters = urllib.parse.urlencode({'apikey':config['sonarr']['apikey'],'term':search_term })
-        media_search_request = requests.get('http://192.168.50.220:8989/api/series/lookup?{query_parameters}'.format(query_parameters=query_parameters) )
-        mediaResults = json.loads(media_search_request.text)
-        for mR in mediaResults:
-            result = media.result(
-                mR.get("title"),
-                mR.get("year"),
-                mR.get("remotePoster"),
-                mR.get("overview",''),
-                mR.get("tvdbId"),
-                "Sonarr")
-            results['s'+str(result.id)] = result
-        return results
+        try:
+            media_search_request = requests.get('http://192.168.50.220:8989/api/series/lookup?{query_parameters}'.format(query_parameters=query_parameters) )
+            media_search_request.raise_for_status() 
+            mediaResults = json.loads(media_search_request.text)
+            for mR in mediaResults:
+                result = media.result(
+                    mR.get("title"),
+                    mR.get("year"),
+                    mR.get("remotePoster"),
+                    mR.get("overview",''),
+                    mR.get("tvdbId"),
+                    "Sonarr")
+                results['s'+str(result.id)] = result
+            return results
+        except requests.exceptions.ConnectionError:
+            print("A connection error occurred. Please check your internet connection.")
+            logging.error("A connection error ocured: %s", e)
+        except requests.exceptions.Timeout:
+            print("The request timed out.")
+            logging.error("A time out occurred: %s", e)
+        except requests.exceptions.HTTPError as e:
+            print("HTTP Error:", e)
+            logging.error("A http error occurred: %s", e)
+        except requests.exceptions.RequestException as e:
+            logging.error("A request error occurred: %s", e)
+            print("An error occurred:", e)
+
+
     def addMedia(self, tvdbid: int):
         print("Adding tv show: "+str(tvdbid))
         media_addition_post_data = json.dumps(SonarrRetriever.buildRequest(self, tvdbid))
